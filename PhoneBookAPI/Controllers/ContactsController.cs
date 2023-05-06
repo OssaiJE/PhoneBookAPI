@@ -39,5 +39,27 @@ namespace PhoneBookAPI.Controllers
 
             return Ok(contact);
         }
+
+        [HttpPatch]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> UpdateContact([FromRoute] Guid id, UpdateContactRequest updateContactRequest)
+        {
+            var contact = await dbContext.Contacts.SingleOrDefaultAsync(x => x.Id == id);
+
+            if (contact == null)
+            {
+                return NotFound();
+            }
+            contact.Id = id;
+            contact.Address = updateContactRequest.Address;
+            contact.Email = updateContactRequest.Email;
+            contact.FullName = updateContactRequest.FullName;
+            contact.PhoneNumber = updateContactRequest.PhoneNumber;
+
+            await dbContext.SaveChangesAsync();
+
+            return Ok(contact);
+
+        }
     }
 }
