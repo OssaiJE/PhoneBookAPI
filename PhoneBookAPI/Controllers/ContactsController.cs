@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PhoneBookAPI.Data;
+using PhoneBookAPI.Models;
 
 namespace PhoneBookAPI.Controllers
 {
@@ -15,9 +17,27 @@ namespace PhoneBookAPI.Controllers
             this.dbContext = dbContext;
         }
         [HttpGet]
-        public IActionResult GetContacts()
+        public async Task<IActionResult> GetContacts()
         {
-            return Ok(dbContext.Contacts.ToList());
+            return Ok(await dbContext.Contacts.ToListAsync());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostContacts(AddContactRequest addContactRequest)
+        {
+            var contact = new ContactModel()
+            {
+                Id = Guid.NewGuid(),
+                Address = addContactRequest.Address,
+                Email = addContactRequest.Email,
+                FullName = addContactRequest.FullName,
+                PhoneNumber = addContactRequest.PhoneNumber
+            };
+
+            await dbContext.Contacts.AddAsync(contact);
+            await dbContext.SaveChangesAsync();
+
+            return Ok(contact);
         }
     }
 }
