@@ -21,7 +21,19 @@ namespace PhoneBookAPI.Controllers
         {
             return Ok(await dbContext.Contacts.ToListAsync());
         }
-
+        
+        [HttpGet]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> GetContact([FromRoute] Guid id)
+        {
+            var contact = await dbContext.Contacts.FirstOrDefaultAsync(x => x.Id == id);
+            if (contact == null)
+            {
+                return NotFound();
+            }
+            return Ok(contact);
+        }
+        
         [HttpPost]
         public async Task<IActionResult> PostContacts(AddContactRequest addContactRequest)
         {
@@ -60,6 +72,24 @@ namespace PhoneBookAPI.Controllers
 
             return Ok(contact);
 
+        }
+
+
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeleteContact([FromRoute] Guid id)
+        {
+            var contact = await dbContext.Contacts.FirstOrDefaultAsync(x => x.Id == id);
+            if (contact == null)
+            {
+                return NotFound($"Contact with the ID {id} does not exist");
+            }
+
+            dbContext.Contacts.Remove(contact);
+            await dbContext.SaveChangesAsync();
+
+            
+            return Ok(contact);
         }
     }
 }
