@@ -10,15 +10,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ContactAPIDbContext>(options => options.UseInMemoryDatabase("ContactsDB"));
+//	Set Database connection
+var connectionString = builder.Configuration.GetConnectionString("PhoneBookApiDBConnectionString");
+builder.Services.AddDbContext<ContactAPIDbContext>(options => options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
